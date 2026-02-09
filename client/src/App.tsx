@@ -8,6 +8,8 @@ import Home from "./pages/Home";
 import Cars from "./pages/Cars";
 import CarDetail from "./pages/CarDetail";
 import AdminDashboard from "./pages/AdminDashboard";
+import Login from "./pages/Login";
+import SignUp from "./pages/SignUp";
 
 function Router() {
   return (
@@ -16,6 +18,8 @@ function Router() {
       <Route path="/cars" component={Cars} />
       <Route path="/cars/:id" component={CarDetail} />
       <Route path="/admin" component={AdminDashboard} />
+      <Route path="/login" component={Login} />
+      <Route path="/signup" component={SignUp} />
       <Route path="/404" component={NotFound} />
       <Route component={NotFound} />
     </Switch>

@@ -6,6 +6,7 @@ import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import * as db from "./db";
 import { uploadCarPhoto, deleteCarPhoto } from "./supabase-storage";
+import { signUpUser, signInUser, signOutUser } from "./supabase-auth";
 import { nanoid } from "nanoid";
 
 // ============= VALIDATION SCHEMAS =============
@@ -121,10 +122,84 @@ export const appRouter = router({
   
   auth: router({
     me: publicProcedure.query(opts => opts.ctx.user),
-    logout: publicProcedure.mutation(({ ctx }) => {
-      const cookieOptions = getSessionCookieOptions(ctx.req);
-      ctx.res.clearCookie(COOKIE_NAME, { ...cookieOptions, maxAge: -1 });
-      return { success: true } as const;
+    
+    signUp: publicProcedure
+      .input(z.object({
+        email: z.string().email(),
+        password: z.string().min(6),
+        fullName: z.string().min(3),
+      }))
+      .mutation(async ({ input }) => {
+        try {
+          const result = await signUpUser(input.email, input.password, input.fullName);
+          
+          // Create user profile in our database
+          if (result.user) {
+            await db.upsertUser({
+              openId: result.user.id,
+              email: result.user.email || input.email,
+              name: input.fullName,
+              loginMethod: 'email',
+              role: 'user',
+            });
+          }
+          
+          return {
+            success: true,
+            user: result.user,
+            session: result.session,
+          };
+        } catch (error: any) {
+          throw new TRPCError({
+            code: 'BAD_REQUEST',
+            message: error.message || 'Erro ao criar conta',
+          });
+        }
+      }),
+    
+    signIn: publicProcedure
+      .input(z.object({
+        email: z.string().email(),
+        password: z.string(),
+      }))
+      .mutation(async ({ input }) => {
+        try {
+          const result = await signInUser(input.email, input.password);
+          
+          // Update user last sign in
+          if (result.user) {
+            await db.upsertUser({
+              openId: result.user.id,
+              email: result.user.email || input.email,
+              lastSignedIn: new Date(),
+            });
+          }
+          
+          return {
+            success: true,
+            user: result.user,
+            session: result.session,
+          };
+        } catch (error: any) {
+          throw new TRPCError({
+            code: 'UNAUTHORIZED',
+            message: error.message || 'Email ou senha inválidos',
+          });
+        }
+      }),
+    
+    logout: publicProcedure.mutation(async ({ ctx }) => {
+      try {
+        await signOutUser();
+        const cookieOptions = getSessionCookieOptions(ctx.req);
+        ctx.res.clearCookie(COOKIE_NAME, { ...cookieOptions, maxAge: -1 });
+        return { success: true } as const;
+      } catch (error: any) {
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: error.message || 'Erro ao fazer logout',
+        });
+      }
     }),
   }),
 

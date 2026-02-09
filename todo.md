@@ -116,3 +116,29 @@
 - [x] Migrar processamento de imagens para Supabase
 - [x] Atualizar endpoints de upload para usar Supabase
 - [x] Testar upload e download de imagens
+
+
+## Fase 5: Autenticação e Páginas de Usuário
+
+### Sistema de Autenticação
+- [x] Criar página de Login
+- [x] Criar página de Cadastro (Sign Up)
+- [x] Integrar autenticação Supabase Auth
+- [x] Adicionar botões de Login/Cadastro na Home
+- [x] Implementar fluxo de logout
+- [ ] Adicionar proteção de rotas para páginas autenticadas
+- [ ] Implementar recuperação de senha
+
+### Dashboard do Usuário
+- [ ] Criar página de perfil do usuário
+- [ ] Criar página "Meus Anúncios"
+- [ ] Criar página "Minhas Mensagens"
+- [ ] Criar página "Favoritos"
+- [ ] Implementar edição de perfil
+
+### Formulário de Cadastro de Veículos
+- [ ] Criar página de cadastro de veículo
+- [ ] Implementar upload de fotos com drag-and-drop
+- [ ] Adicionar validações de formulário
+- [ ] Implementar preview de fotos antes do upload
+- [ ] Adicionar opção de editar anúncio existente

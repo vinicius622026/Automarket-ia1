@@ -3,14 +3,13 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { getLoginUrl } from "@/const";
 import { Link } from "wouter";
 import { Search, Car, Shield, Zap, TrendingUp, MessageSquare, Star } from "lucide-react";
 import { trpc } from "@/lib/trpc";
 import { useState } from "react";
 
 export default function Home() {
-  const { user, isAuthenticated } = useAuth();
+  const { user, isAuthenticated, loading } = useAuth();
   const [searchQuery, setSearchQuery] = useState("");
 
   const { data: featuredCars } = trpc.cars.search.useQuery({
@@ -48,9 +47,14 @@ export default function Home() {
                 </Link>
               </>
             ) : (
-              <Button size="sm" asChild>
-                <a href={getLoginUrl()}>Entrar</a>
-              </Button>
+              <>
+                <Link href="/login">
+                  <Button variant="ghost" size="sm">Entrar</Button>
+                </Link>
+                <Link href="/signup">
+                  <Button size="sm">Criar Conta</Button>
+                </Link>
+              </>
             )}
           </div>
         </div>
@@ -272,8 +276,10 @@ export default function Home() {
               </Button>
             ) : (
               <>
-                <Button size="lg" variant="secondary" asChild>
-                  <a href={getLoginUrl()}>Começar Agora</a>
+                            <Button size="lg" asChild>
+                  <Link href="/signup">
+                    <a>Começar Agora</a>
+                  </Link>
                 </Button>
                 <Button size="lg" variant="outline" className="bg-transparent border-primary-foreground text-primary-foreground hover:bg-primary-foreground/10" asChild>
                   <Link href="/cars">
@@ -304,7 +310,7 @@ export default function Home() {
               <ul className="space-y-2 text-sm text-muted-foreground">
                 <li><Link href="/cars"><a className="hover:text-foreground transition-colors">Explorar</a></Link></li>
                 <li><Link href="/stores"><a className="hover:text-foreground transition-colors">Lojas</a></Link></li>
-                <li><a href={getLoginUrl()} className="hover:text-foreground transition-colors">Anunciar</a></li>
+                <li><Link href="/signup"><a className="hover:text-foreground transition-colors">Anunciar</a></Link></li>
               </ul>
             </div>
             <div>
