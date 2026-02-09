@@ -1,0 +1,16 @@
+{
+  "name": "automarket-ai-mcp-server",
+  "version": "1.0.0",
+  "description": "MCP Server for AutoMarket AI with car valuation and market analysis tools",
+  "type": "module",
+  "main": "index.ts",
+  "bin": {
+    "automarket-ai-mcp": "./index.ts"
+  },
+  "scripts": {
+    "start": "tsx index.ts"
+  },
+  "keywords": ["mcp", "automarket", "ai", "cars"],
+  "author": "AutoMarket AI",
+  "license": "MIT"
+}
