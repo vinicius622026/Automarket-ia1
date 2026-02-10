@@ -211,3 +211,9 @@
 ### Backend API
 - [x] Implementar endpoint de bulk-import para lojas
 - [x] Implementar sistema de notificações por email
+
+
+## Fase 10: Correções de Bugs
+
+### HTML/React
+- [x] Corrigir erro de nested anchor tags na Home

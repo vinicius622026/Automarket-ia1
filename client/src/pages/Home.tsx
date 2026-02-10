@@ -22,25 +22,19 @@ export default function Home() {
       {/* Navigation */}
       <nav className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50">
         <div className="container flex h-16 items-center justify-between">
-          <Link href="/">
-            <a className="flex items-center gap-2 font-bold text-xl">
-              <Car className="h-6 w-6 text-primary" />
-              <span>AutoMarket AI</span>
-            </a>
+          <Link href="/" className="flex items-center gap-2 font-bold text-xl">
+            <Car className="h-6 w-6 text-primary" />
+            <span>AutoMarket AI</span>
           </Link>
 
           <div className="flex items-center gap-4">
-            <Link href="/cars">
-              <a className="text-sm font-medium hover:text-primary transition-colors">
-                Explorar
-              </a>
+            <Link href="/cars" className="text-sm font-medium hover:text-primary transition-colors">
+              Explorar
             </Link>
             {isAuthenticated ? (
               <>
-                <Link href="/dashboard">
-                  <a className="text-sm font-medium hover:text-primary transition-colors">
-                    Dashboard
-                  </a>
+                <Link href="/dashboard" className="text-sm font-medium hover:text-primary transition-colors">
+                  Dashboard
                 </Link>
                 <Link href="/cars/new">
                   <Button size="sm">Anunciar Veículo</Button>
@@ -87,11 +81,9 @@ export default function Home() {
                   onChange={(e) => setSearchQuery(e.target.value)}
                 />
               </div>
-              <Button size="lg" asChild>
-                <Link href={`/cars${searchQuery ? `?search=${searchQuery}` : ""}`}>
-                  <a>Buscar</a>
-                </Link>
-              </Button>
+              <Link href={`/cars${searchQuery ? `?search=${searchQuery}` : ""}`}>
+                <Button size="lg">Buscar</Button>
+              </Link>
             </div>
 
             {/* Quick Stats */}
