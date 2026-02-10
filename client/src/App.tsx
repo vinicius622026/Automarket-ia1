@@ -10,6 +10,9 @@ import CarDetail from "./pages/CarDetail";
 import AdminDashboard from "./pages/AdminDashboard";
 import Login from "./pages/Login";
 import SignUp from "./pages/SignUp";
+import Dashboard from "./pages/Dashboard";
+import CreateCar from "./pages/CreateCar";
+import MyCars from "./pages/MyCars";
 
 function Router() {
   return (
@@ -20,6 +23,9 @@ function Router() {
       <Route path="/admin" component={AdminDashboard} />
       <Route path="/login" component={Login} />
       <Route path="/signup" component={SignUp} />
+      <Route path="/dashboard" component={Dashboard} />
+      <Route path="/cars/new" component={CreateCar} />
+      <Route path="/dashboard/my-cars" component={MyCars} />
       <Route path="/404" component={NotFound} />
       <Route component={NotFound} />
     </Switch>

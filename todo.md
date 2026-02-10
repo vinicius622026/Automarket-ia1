@@ -142,3 +142,27 @@
 - [ ] Adicionar validações de formulário
 - [ ] Implementar preview de fotos antes do upload
 - [ ] Adicionar opção de editar anúncio existente
+
+
+## Fase 6: Completar Frontend
+
+### Páginas Principais
+- [x] Corrigir botões Login/Cadastro na Home
+- [x] Criar Dashboard do Usuário com visão geral
+- [x] Criar página "Meus Anúncios" com listagem e ações
+- [ ] Criar página "Favoritos"
+- [ ] Criar página de Perfil do Usuário
+- [x] Adicionar navegação entre páginas autenticadas
+
+### Formulário de Veículos
+- [x] Criar página de cadastro de veículo (/cars/new)
+- [x] Implementar upload de múltiplas fotos
+- [x] Adicionar preview de fotos
+- [x] Implementar validações do formulário
+- [ ] Adicionar página de edição de veículo (/cars/:id/edit)
+
+### Melhorias de UX
+- [x] Adicionar loading states em todas as páginas
+- [x] Implementar mensagens de erro amigáveis
+- [x] Adicionar confirmações para ações destrutivas
+- [x] Melhorar responsividade mobile
