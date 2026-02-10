@@ -35,6 +35,7 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
+import { LineChart, Line, BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
 
 export default function AdminDashboard() {
   const { user, isAuthenticated } = useAuth();
@@ -75,6 +76,14 @@ export default function AdminDashboard() {
     limit: 50,
     offset: 0,
   });
+
+  // Analytics data
+  const { data: newUsersData } = trpc.admin.getNewUsersPerDay.useQuery({ days: 30 });
+  const { data: newCarsData } = trpc.admin.getCarsCreatedPerDay.useQuery({ days: 30 });
+  const { data: carsByBrand } = trpc.admin.getCarsByBrand.useQuery({ limit: 10 });
+  const { data: carsByFuel } = trpc.admin.getCarsByFuel.useQuery();
+
+  const COLORS = ['#1e40af', '#f97316', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899', '#06b6d4'];
 
   const moderateCarMutation = trpc.admin.moderateCar.useMutation({
     onSuccess: () => {
@@ -203,10 +212,125 @@ export default function AdminDashboard() {
         {/* Tabs */}
         <Tabs defaultValue="cars" className="space-y-6">
           <TabsList>
+            <TabsTrigger value="overview">Visão Geral</TabsTrigger>
             <TabsTrigger value="cars">Anúncios</TabsTrigger>
             <TabsTrigger value="users">Usuários</TabsTrigger>
             <TabsTrigger value="stores">Lojas</TabsTrigger>
           </TabsList>
+
+          {/* Overview Tab with Charts */}
+          <TabsContent value="overview" className="space-y-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {/* New Users Chart */}
+              <Card>
+                <CardHeader>
+                  <CardTitle>Novos Usuários (Últimos 30 dias)</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  {newUsersData && newUsersData.length > 0 ? (
+                    <ResponsiveContainer width="100%" height={300}>
+                      <LineChart data={newUsersData}>
+                        <CartesianGrid strokeDasharray="3 3" />
+                        <XAxis dataKey="date" />
+                        <YAxis />
+                        <Tooltip />
+                        <Legend />
+                        <Line type="monotone" dataKey="count" stroke="#1e40af" name="Usuários" />
+                      </LineChart>
+                    </ResponsiveContainer>
+                  ) : (
+                    <div className="h-[300px] flex items-center justify-center">
+                      <p className="text-muted-foreground">Nenhum dado disponível</p>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+
+              {/* New Cars Chart */}
+              <Card>
+                <CardHeader>
+                  <CardTitle>Novos Anúncios (Últimos 30 dias)</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  {newCarsData && newCarsData.length > 0 ? (
+                    <ResponsiveContainer width="100%" height={300}>
+                      <BarChart data={newCarsData}>
+                        <CartesianGrid strokeDasharray="3 3" />
+                        <XAxis dataKey="date" />
+                        <YAxis />
+                        <Tooltip />
+                        <Legend />
+                        <Bar dataKey="count" fill="#f97316" name="Anúncios" />
+                      </BarChart>
+                    </ResponsiveContainer>
+                  ) : (
+                    <div className="h-[300px] flex items-center justify-center">
+                      <p className="text-muted-foreground">Nenhum dado disponível</p>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+
+              {/* Cars by Brand Chart */}
+              <Card>
+                <CardHeader>
+                  <CardTitle>Veículos por Marca (Top 10)</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  {carsByBrand && carsByBrand.length > 0 ? (
+                    <ResponsiveContainer width="100%" height={300}>
+                      <BarChart data={carsByBrand} layout="vertical">
+                        <CartesianGrid strokeDasharray="3 3" />
+                        <XAxis type="number" />
+                        <YAxis dataKey="brand" type="category" width={80} />
+                        <Tooltip />
+                        <Legend />
+                        <Bar dataKey="count" fill="#10b981" name="Quantidade" />
+                      </BarChart>
+                    </ResponsiveContainer>
+                  ) : (
+                    <div className="h-[300px] flex items-center justify-center">
+                      <p className="text-muted-foreground">Nenhum dado disponível</p>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+
+              {/* Cars by Fuel Chart */}
+              <Card>
+                <CardHeader>
+                  <CardTitle>Distribuição por Combustível</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  {carsByFuel && carsByFuel.length > 0 ? (
+                    <ResponsiveContainer width="100%" height={300}>
+                      <PieChart>
+                        <Pie
+                          data={carsByFuel}
+                          cx="50%"
+                          cy="50%"
+                          labelLine={false}
+                          label={({ fuel, count }) => `${fuel}: ${count}`}
+                          outerRadius={80}
+                          fill="#8884d8"
+                          dataKey="count"
+                        >
+                          {carsByFuel.map((entry, index) => (
+                            <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                          ))}
+                        </Pie>
+                        <Tooltip />
+                      </PieChart>
+                    </ResponsiveContainer>
+                  ) : (
+                    <div className="h-[300px] flex items-center justify-center">
+                      <p className="text-muted-foreground">Nenhum dado disponível</p>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            </div>
+          </TabsContent>
 
           {/* Cars Tab */}
           <TabsContent value="cars" className="space-y-4">

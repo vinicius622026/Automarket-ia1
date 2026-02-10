@@ -8,6 +8,9 @@ import * as db from "./db";
 import { uploadCarPhoto, deleteCarPhoto } from "./supabase-storage";
 import { signUpUser, signInUser, signOutUser } from "./supabase-auth";
 import { notifyNewMessage, notifyNewReview } from "./email-notifications";
+import { validateApiKey, extractApiKey } from "./api-key-middleware";
+import { getStoreAnalytics, getVehiclesCreatedTrend, getMostViewedVehicles, getMessagesReceivedTrend } from "./store-analytics";
+import { getNewUsersPerDay, getCarsCreatedPerDay, getCarsByBrand, getCarsByFuel } from "./admin-analytics";
 import { nanoid } from "nanoid";
 
 // ============= VALIDATION SCHEMAS =============
@@ -300,6 +303,46 @@ export const appRouter = router({
       .input(z.object({ limit: z.number().default(50), offset: z.number().default(0) }))
       .query(async ({ input }) => {
         return await db.getAllStores(input.limit, input.offset);
+      }),
+
+    getAnalytics: storeOwnerProcedure
+      .input(z.object({ storeId: z.number().int() }))
+      .query(async ({ ctx, input }) => {
+        const store = await db.getStoreById(input.storeId);
+        if (!store || store.ownerId !== ctx.user.id) {
+          throw new TRPCError({ code: 'FORBIDDEN', message: 'Sem permissão para visualizar analytics desta loja' });
+        }
+        return await getStoreAnalytics(input.storeId);
+      }),
+
+    getVehiclesTrend: storeOwnerProcedure
+      .input(z.object({ storeId: z.number().int(), days: z.number().default(30) }))
+      .query(async ({ ctx, input }) => {
+        const store = await db.getStoreById(input.storeId);
+        if (!store || store.ownerId !== ctx.user.id) {
+          throw new TRPCError({ code: 'FORBIDDEN', message: 'Sem permissão para visualizar analytics desta loja' });
+        }
+        return await getVehiclesCreatedTrend(input.storeId, input.days);
+      }),
+
+    getMessagesTrend: storeOwnerProcedure
+      .input(z.object({ storeId: z.number().int(), days: z.number().default(30) }))
+      .query(async ({ ctx, input }) => {
+        const store = await db.getStoreById(input.storeId);
+        if (!store || store.ownerId !== ctx.user.id) {
+          throw new TRPCError({ code: 'FORBIDDEN', message: 'Sem permissão para visualizar analytics desta loja' });
+        }
+        return await getMessagesReceivedTrend(input.storeId, input.days);
+      }),
+
+    getMostViewed: storeOwnerProcedure
+      .input(z.object({ storeId: z.number().int(), limit: z.number().default(5) }))
+      .query(async ({ ctx, input }) => {
+        const store = await db.getStoreById(input.storeId);
+        if (!store || store.ownerId !== ctx.user.id) {
+          throw new TRPCError({ code: 'FORBIDDEN', message: 'Sem permissão para visualizar analytics desta loja' });
+        }
+        return await getMostViewedVehicles(input.storeId, input.limit);
       }),
   }),
 
@@ -753,6 +796,47 @@ export const appRouter = router({
         };
       }),
 
+    bulkImportWithApiKey: publicProcedure
+      .input(z.object({
+        apiKey: z.string(),
+        cars: z.array(createCarSchema).max(50),
+      }))
+      .mutation(async ({ input }) => {
+        // Validate API key
+        const store = await validateApiKey(input.apiKey);
+
+        const results = {
+          success: [] as number[],
+          failed: [] as { index: number; error: string }[],
+        };
+
+        for (let i = 0; i < input.cars.length; i++) {
+          try {
+            const carData = input.cars[i];
+            const car = await db.createCar({
+              ...carData,
+              price: carData.price.toString(),
+              sellerId: store.ownerId,
+              storeId: store.id,
+              status: 'DRAFT',
+            });
+            results.success.push(car.id);
+          } catch (error: any) {
+            results.failed.push({
+              index: i,
+              error: error.message || 'Erro desconhecido',
+            });
+          }
+        }
+
+        return {
+          total: input.cars.length,
+          imported: results.success.length,
+          failed: results.failed.length,
+          details: results,
+        };
+      }),
+
     getImportStatus: protectedProcedure
       .input(z.object({
         jobId: z.string(),
@@ -898,6 +982,29 @@ export const appRouter = router({
       .query(async ({ input }) => {
         return await db.getModerationLogs(input.limit, input.offset);
       }),
+
+    // Analytics
+    getNewUsersPerDay: adminProcedure
+      .input(z.object({ days: z.number().default(30) }))
+      .query(async ({ input }) => {
+        return await getNewUsersPerDay(input.days);
+      }),
+
+    getCarsCreatedPerDay: adminProcedure
+      .input(z.object({ days: z.number().default(30) }))
+      .query(async ({ input }) => {
+        return await getCarsCreatedPerDay(input.days);
+      }),
+
+    getCarsByBrand: adminProcedure
+      .input(z.object({ limit: z.number().default(10) }))
+      .query(async ({ input }) => {
+        return await getCarsByBrand(input.limit);
+      }),
+
+    getCarsByFuel: adminProcedure.query(async () => {
+      return await getCarsByFuel();
+    }),
   }),
 });
 

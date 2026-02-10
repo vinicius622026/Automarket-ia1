@@ -232,3 +232,23 @@
 
 - [x] Criar checkpoint do projeto
 - [ ] Fazer commit e push para GitHub (https://github.com/AdrianoGouveia/Automarket)
+
+
+## Fase 11: Completar Fase 2 (20% restante)
+
+### Sistema de API Key
+- [x] Criar middleware validateApiKey no backend
+- [x] Adicionar validação de API key nos endpoints de integração
+- [x] Documentar uso da API key para lojas
+
+### Dashboard de Analytics para Lojas
+- [x] Criar página /store/analytics
+- [x] Implementar métricas: visualizações, leads, mensagens recebidas
+- [x] Adicionar gráficos de tendências (últimos 30 dias)
+- [x] Mostrar veículos mais visualizados
+
+### Gráficos no Admin Dashboard
+- [x] Instalar biblioteca de gráficos (Recharts)
+- [x] Adicionar gráfico de novos usuários por dia
+- [x] Adicionar gráfico de anúncios criados por dia
+- [x] Adicionar gráfico de distribuição por marca/modelo
