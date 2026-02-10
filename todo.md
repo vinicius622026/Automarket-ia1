@@ -258,3 +258,9 @@
 - [x] Corrigir vercel.json para projeto Express + tRPC
 - [x] Adicionar favicon.svg
 - [ ] Testar deploy no Vercel
+
+
+## Fase 13: Correção de Erro 404 no Vercel
+- [x] Corrigir vercel.json para servir arquivos estáticos corretamente
+- [x] Verificar output directory (dist/public vs dist)
+- [ ] Testar deploy no Vercel

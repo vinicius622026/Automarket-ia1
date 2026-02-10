@@ -2,18 +2,21 @@
   "version": 2,
   "builds": [
     {
-      "src": "dist/index.js",
-      "use": "@vercel/node"
-    },
-    {
-      "src": "client/public/**",
-      "use": "@vercel/static"
+      "src": "package.json",
+      "use": "@vercel/node",
+      "config": {
+        "includeFiles": ["dist/**"]
+      }
     }
   ],
   "routes": [
     {
+      "src": "/favicon\\.(ico|svg)",
+      "dest": "/dist/public/favicon.svg"
+    },
+    {
       "src": "/assets/(.*)",
-      "dest": "/assets/$1"
+      "dest": "/dist/public/assets/$1"
     },
     {
       "src": "/api/(.*)",
@@ -21,7 +24,7 @@
     },
     {
       "src": "/(.*)",
-      "dest": "/dist/index.js"
+      "dest": "/dist/public/index.html"
     }
   ],
   "env": {
