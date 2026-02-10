@@ -252,3 +252,9 @@
 - [x] Adicionar gráfico de novos usuários por dia
 - [x] Adicionar gráfico de anúncios criados por dia
 - [x] Adicionar gráfico de distribuição por marca/modelo
+
+
+## Fase 12: Correção de Deploy no Vercel
+- [x] Corrigir vercel.json para projeto Express + tRPC
+- [x] Adicionar favicon.svg
+- [ ] Testar deploy no Vercel
