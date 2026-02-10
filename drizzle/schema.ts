@@ -43,6 +43,9 @@ export const stores = mysqlTable("stores", {
   document: varchar("document", { length: 20 }).notNull(),
   apiKey: varchar("apiKey", { length: 64 }).notNull().unique(),
   isVerified: boolean("isVerified").default(false).notNull(),
+  phone: varchar("phone", { length: 20 }),
+  email: varchar("email", { length: 320 }),
+  location: json("location").$type<{ city?: string; state?: string; zip?: string }>(),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
 }, (table) => ({

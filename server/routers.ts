@@ -62,6 +62,7 @@ const carFiltersSchema = z.object({
   fuel: z.string().optional(),
   status: z.string().optional(),
   search: z.string().optional(),
+  storeId: z.number().int().optional(),
   limit: z.number().default(20),
   offset: z.number().default(0),
 });
@@ -137,9 +138,37 @@ export const appRouter = router({
         return null;
       }
       
-      // For now, return null to show login buttons
-      // TODO: Validate Supabase token and return user data
-      return null;
+      try {
+        // Validate Supabase token and get user
+        const { getCurrentUser } = await import('./supabase-auth');
+        const supabaseUser = await getCurrentUser(token);
+        
+        if (!supabaseUser) {
+          return null;
+        }
+        
+        // Get or create user in our database
+        const user = await db.getUserByOpenId(supabaseUser.id);
+        
+        if (!user) {
+          // Create user if doesn't exist
+          await db.upsertUser({
+            openId: supabaseUser.id,
+            email: supabaseUser.email || '',
+            name: supabaseUser.user_metadata?.full_name || supabaseUser.email?.split('@')[0] || 'User',
+            loginMethod: 'email',
+            role: 'user',
+          });
+          
+          const newUser = await db.getUserByOpenId(supabaseUser.id);
+          return newUser;
+        }
+        
+        return user;
+      } catch (error) {
+        console.error('[Auth] Error validating token:', error);
+        return null;
+      }
     }),
     
     signUp: publicProcedure

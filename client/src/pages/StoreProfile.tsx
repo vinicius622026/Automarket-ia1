@@ -108,7 +108,7 @@ export default function StoreProfile() {
           <div className="flex items-center gap-2 mb-6">
             <Car className="h-6 w-6 text-primary" />
             <h2 className="text-2xl font-bold">Veículos da Loja</h2>
-            <Badge variant="secondary">{carsData?.total || 0}</Badge>
+            <Badge variant="secondary">{carsData?.pagination?.total || 0}</Badge>
           </div>
 
           {carsData && carsData.data.length > 0 ? (

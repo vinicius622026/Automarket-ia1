@@ -23,11 +23,11 @@ export default function Profile() {
     zip: "",
   });
 
-  const updateProfile = trpc.profiles.update.useMutation({
+  const updateProfile = trpc.profile.update.useMutation({
     onSuccess: () => {
       toast.success("Perfil atualizado com sucesso!");
     },
-    onError: (error) => {
+    onError: (error: any) => {
       toast.error(error.message || "Erro ao atualizar perfil");
     },
   });
