@@ -217,3 +217,5 @@
 
 ### HTML/React
 - [x] Corrigir TODOS os erros de nested anchor tags
+
+- [x] Corrigir erro 503 Service Unavailable na autenticação Supabase
