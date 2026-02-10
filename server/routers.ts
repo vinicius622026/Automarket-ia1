@@ -121,7 +121,22 @@ export const appRouter = router({
   system: systemRouter,
   
   auth: router({
-    me: publicProcedure.query(opts => opts.ctx.user),
+    me: publicProcedure.query(async ({ ctx }) => {
+      // Check for Supabase token in Authorization header
+      const authHeader = ctx.req.headers.authorization;
+      if (!authHeader || !authHeader.startsWith('Bearer ')) {
+        return null;
+      }
+      
+      const token = authHeader.split(' ')[1];
+      if (!token || token === 'null' || token === 'undefined') {
+        return null;
+      }
+      
+      // For now, return null to show login buttons
+      // TODO: Validate Supabase token and return user data
+      return null;
+    }),
     
     signUp: publicProcedure
       .input(z.object({

@@ -166,3 +166,9 @@
 - [x] Implementar mensagens de erro amigáveis
 - [x] Adicionar confirmações para ações destrutivas
 - [x] Melhorar responsividade mobile
+
+
+## Fase 7: Correções de Autenticação
+- [x] Corrigir conflito entre Manus OAuth e Supabase Auth
+- [x] Fazer botões Login/Cadastro aparecerem quando usuário não autenticado
+- [x] Garantir que auth.me retorne null quando não há sessão Supabase
