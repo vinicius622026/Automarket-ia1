@@ -46,8 +46,8 @@ O AutoMarket AI é uma plataforma completa de marketplace de veículos que combi
 - **Frontend**: React 19 + TypeScript + Tailwind CSS 4 + Vite
 - **Backend**: Node.js + Express + tRPC 11 + TypeScript
 - **Banco de Dados**: MySQL/TiDB (via Drizzle ORM)
-- **Autenticação**: Manus OAuth (JWT)
-- **Storage**: S3 (via Manus)
+- **Autenticação**: Supabase Auth
+- **Storage**: S3 (via Supabase Storage)
 - **Processamento de Imagem**: Sharp
 - **MCP Server**: Model Context Protocol SDK
 
@@ -78,7 +78,7 @@ automarket-ai/
 
 ### Tabelas Principais
 
-- **users**: Usuários do sistema (integração com OAuth)
+- **users**: Usuários do sistema (integração com Supabase Auth)
 - **profiles**: Perfis estendidos dos usuários
 - **stores**: Lojas/revendas
 - **cars**: Anúncios de veículos
@@ -128,19 +128,32 @@ pnpm start
 
 ## 🔑 Variáveis de Ambiente
 
-As seguintes variáveis são injetadas automaticamente pelo sistema:
+As seguintes variáveis devem ser configuradas no ambiente:
 
+### Banco de Dados
 - `DATABASE_URL`: String de conexão MySQL/TiDB
-- `JWT_SECRET`: Segredo para assinatura de tokens
-- `VITE_APP_ID`: ID da aplicação OAuth
-- `OAUTH_SERVER_URL`: URL do servidor OAuth
+
+### Autenticação (Supabase)
+- `VITE_SUPABASE_URL`: URL do projeto Supabase
+- `VITE_SUPABASE_ANON_KEY`: Chave pública (anon) do Supabase
+- `SUPABASE_SERVICE_ROLE_KEY` (opcional): Chave de serviço para operações administrativas
+
+### Segurança
+- `JWT_SECRET`: Segredo para assinatura de tokens de sessão
+
+### APIs Internas
 - `BUILT_IN_FORGE_API_KEY`: Chave para APIs internas
 - `BUILT_IN_FORGE_API_URL`: URL das APIs internas
+
+### Configuração do Proprietário
+- `OWNER_OPEN_ID`: OpenID do proprietário/admin do sistema
 
 ## 📡 API Endpoints
 
 ### Autenticação
 - `POST /api/trpc/auth.me` - Dados do usuário atual
+- `POST /api/trpc/auth.signUp` - Criar nova conta
+- `POST /api/trpc/auth.signIn` - Login com email/senha
 - `POST /api/trpc/auth.logout` - Logout
 
 ### Perfis
