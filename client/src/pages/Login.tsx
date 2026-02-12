@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link, useLocation } from "wouter";
 import { trpc } from "@/lib/trpc";
+import { supabase } from "@/lib/supabase";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -15,11 +16,14 @@ export default function Login() {
   const [isLoading, setIsLoading] = useState(false);
 
   const signInMutation = trpc.auth.signIn.useMutation({
-    onSuccess: (data) => {
+    onSuccess: async (data) => {
       toast.success("Login realizado com sucesso!");
-      // Store session token in localStorage
-      if (data.session?.access_token) {
-        localStorage.setItem("supabase_token", data.session.access_token);
+      // Set the Supabase session
+      if (data.session) {
+        await supabase.auth.setSession({
+          access_token: data.session.access_token,
+          refresh_token: data.session.refresh_token,
+        });
       }
       setLocation("/");
     },
