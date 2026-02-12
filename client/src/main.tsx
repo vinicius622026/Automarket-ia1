@@ -38,19 +38,51 @@ queryClient.getMutationCache().subscribe(event => {
   }
 });
 
+// Cache Supabase session to avoid fetching on every request
+let cachedSession: { access_token: string; expires_at?: number } | null = null;
+let lastSessionCheck = 0;
+const SESSION_CACHE_MS = 60000; // Cache for 1 minute
+
+async function getAuthHeaders(): Promise<HeadersInit> {
+  const now = Date.now();
+  
+  // Refresh cache if expired or doesn't exist
+  if (!cachedSession || (now - lastSessionCheck > SESSION_CACHE_MS)) {
+    const { data: { session } } = await supabase.auth.getSession();
+    cachedSession = session;
+    lastSessionCheck = now;
+  }
+  
+  const headers: HeadersInit = {};
+  if (cachedSession?.access_token) {
+    headers['Authorization'] = `Bearer ${cachedSession.access_token}`;
+  }
+  
+  return headers;
+}
+
+// Listen for auth state changes to invalidate cache
+supabase.auth.onAuthStateChange((event) => {
+  if (event === 'SIGNED_IN' || event === 'SIGNED_OUT' || event === 'TOKEN_REFRESHED') {
+    cachedSession = null;
+    lastSessionCheck = 0;
+  }
+});
+
 const trpcClient = trpc.createClient({
   links: [
     httpBatchLink({
       url: "/api/trpc",
       transformer: superjson,
       async fetch(input, init) {
-        // Get the Supabase session and add Authorization header
-        const { data: { session } } = await supabase.auth.getSession();
+        // Get cached auth headers
+        const authHeaders = await getAuthHeaders();
         const headers = new Headers(init?.headers);
         
-        if (session?.access_token) {
-          headers.set('Authorization', `Bearer ${session.access_token}`);
-        }
+        // Merge auth headers
+        Object.entries(authHeaders).forEach(([key, value]) => {
+          headers.set(key, value as string);
+        });
         
         return globalThis.fetch(input, {
           ...(init ?? {}),

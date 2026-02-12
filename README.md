@@ -47,7 +47,7 @@ O AutoMarket AI é uma plataforma completa de marketplace de veículos que combi
 - **Backend**: Node.js + Express + tRPC 11 + TypeScript
 - **Banco de Dados**: MySQL/TiDB (via Drizzle ORM)
 - **Autenticação**: Supabase Auth
-- **Storage**: S3 (via Supabase Storage)
+- **Storage**: S3 (via AWS SDK)
 - **Processamento de Imagem**: Sharp
 - **MCP Server**: Model Context Protocol SDK
 

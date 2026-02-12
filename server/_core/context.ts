@@ -29,10 +29,20 @@ export async function createContext(
           
           // Create user if doesn't exist
           if (!user) {
+            const userName = supabaseUser.user_metadata?.full_name || 
+                           supabaseUser.email?.split('@')[0] || 
+                           'User';
+            const userEmail = supabaseUser.email || null;
+            
+            if (!userEmail) {
+              console.error('[Auth] Cannot create user without email');
+              throw new Error('User email is required');
+            }
+            
             await db.upsertUser({
               openId: supabaseUser.id,
-              email: supabaseUser.email || '',
-              name: supabaseUser.user_metadata?.full_name || supabaseUser.email?.split('@')[0] || 'User',
+              email: userEmail,
+              name: userName,
               loginMethod: 'email',
               lastSignedIn: new Date(),
             });
