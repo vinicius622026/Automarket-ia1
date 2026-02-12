@@ -149,8 +149,10 @@ function vitePluginManusDebugCollector(): Plugin {
             // Validate Content-Type if available
             const contentType = req.headers["content-type"];
             if (contentType && !contentType.includes("application/json")) {
-              console.error(`[Manus Debug Collector] Invalid Content-Type: ${contentType}`);
-              console.error(`[Manus Debug Collector] Body preview: ${body.substring(0, 200)}`);
+              if (process.env.NODE_ENV !== "production") {
+                console.error(`[Manus Debug Collector] Invalid Content-Type: ${contentType}`);
+                console.error(`[Manus Debug Collector] Body preview: ${body.substring(0, 200)}`);
+              }
               res.writeHead(400, { "Content-Type": "application/json" });
               res.end(JSON.stringify({ 
                 success: false, 
@@ -162,10 +164,12 @@ function vitePluginManusDebugCollector(): Plugin {
             const payload = JSON.parse(body);
             handlePayload(payload);
           } catch (e) {
-            // Log detailed error information for debugging
-            console.error("[Manus Debug Collector] JSON parse error:", e);
-            console.error(`[Manus Debug Collector] Body length: ${body.length}`);
-            console.error(`[Manus Debug Collector] Body preview: ${body.substring(0, 200)}`);
+            // Log detailed error information for debugging (only in development)
+            if (process.env.NODE_ENV !== "production") {
+              console.error("[Manus Debug Collector] JSON parse error:", e);
+              console.error(`[Manus Debug Collector] Body length: ${body.length}`);
+              console.error(`[Manus Debug Collector] Body preview: ${body.substring(0, 200)}`);
+            }
             
             res.writeHead(400, { "Content-Type": "application/json" });
             res.end(JSON.stringify({ 
